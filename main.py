@@ -8,23 +8,28 @@ class Labirinto:
         
     def resultado(self):
         resultado = self.resolver()
-        if resultado:
-            emojis = {'1': '🟫', '0': '⬜', '.': '🔴', 'm': '🐭', 'e': '🧀', '*': '🟢'}
-
-            matriz_visual = [linha[:] for linha in self.matriz]
-
-            for (l, c) in self.caminho:
-                if matriz_visual[l][c] not in ('m', 'e'):
-                    matriz_visual[l][c] = '*'
-
-            for l in range(0, len(matriz_visual)):
-                for c in range(0, len(matriz_visual[0])):
-                    print(emojis[matriz_visual[l][c]], end='')
-                print('')
-            
-            print('PASSOS:', self.caminho)
+        if self.erro:
+            print('O LABIRINTO É INVALIDO!')
+            return
         else:
-            print("LABIRINTO SEM SAIDA!")
+            if resultado:
+                emojis = {'1': '🟫', '0': '⬜', '.': '🔴', 'm': '🐭', 'e': '🧀', '*': '🟢'}
+
+                matriz_visual = [linha[:] for linha in self.matriz]
+
+                for (l, c) in self.caminho:
+                    if matriz_visual[l][c] not in ('m', 'e'):
+                        matriz_visual[l][c] = '*'
+
+                for l in range(0, len(matriz_visual)):
+                    for c in range(0, len(matriz_visual[0])):
+                        print(emojis[matriz_visual[l][c]], end='')
+                    print('')
+                
+                print('PASSOS:', self.caminho)
+            else:
+                print("LABIRINTO SEM SAIDA!")
+            
             
     def resolver(self):
         mouse = self._encontrar('m')
