@@ -1,7 +1,3 @@
-import os
-import time
-
-
 class Labirinto:
     def __init__(self, nome_arquivo):
         self.nome_arquivo = nome_arquivo
@@ -9,60 +5,43 @@ class Labirinto:
         self.erro = False
         self.caminho = []
         self._ler_labirinto()
-
+        
     def resultado(self):
+        resultado = self.resolver()
         if self.erro:
             print('O LABIRINTO É INVALIDO!')
             return
+        else:
+            if resultado:
+                emojis = {'1': '🟫', '0': '⬜', '.': '🔴', 'm': '🐭', 'e': '🧀', '*': '🟢'}
 
-        if self.resolver():
-            emojis = {'1': '🟫', '0': '⬜', '.': '🔴', 'm': '🐭', 'e': '🧀', '*': '🟢'}
-            matriz_visual = [linha[:] for linha in self.matriz]
+                matriz_visual = [linha[:] for linha in self.matriz]
 
-            for (l, c) in self.caminho:
-                if matriz_visual[l][c] != 'e':
-                    matriz_visual[l][c] = '*'
+                for (l, c) in self.caminho:
+                    if matriz_visual[l][c] not in ('m', 'e'):
+                        matriz_visual[l][c] = '*'
 
-            l, c = self.caminho[0]
-            matriz_visual[l][c] = 'm'
-
-            os.system('cls' if os.name == 'nt' else 'clear')
-            for l in range(0, len(matriz_visual)):
+                for l in range(0, len(matriz_visual)):
                     for c in range(0, len(matriz_visual[0])):
                         print(emojis[matriz_visual[l][c]], end='')
                     print('')
                 
-            print('PASSOS:', self.caminho)
-        else:
-            print('LABIRINTO SEM SAIDA!')
-
+                print('PASSOS:', self.caminho)
+            else:
+                print("LABIRINTO SEM SAIDA!")
+            
+            
     def resolver(self):
         mouse = self._encontrar('m')
         if mouse is None:
             return False
         return self._backtrack(mouse[0], mouse[1])
-
+        
     def _encontrar(self, caracter):
-        for l in range(len(self.matriz)):
-            for c in range(len(self.matriz[0])):
+        for l in range(0, len(self.matriz)):
+            for c in range(0, len(self.matriz[0])):
                 if self.matriz[l][c] == caracter:
-                    return (l, c)
-        return None
-
-    def _exibir(self, linha_atual=None, coluna_atual=None):
-        emojis = {'1': '🟫', '0': '⬜', '.': '🔴', 'm': '🐭', 'e': '🧀', '*': '🟢'}
-
-        os.system('cls' if os.name == 'nt' else 'clear')
-
-        for l in range(len(self.matriz)):
-            for c in range(len(self.matriz[0])):
-                if (l, c) == (linha_atual, coluna_atual):
-                    print('🐭', end='')
-                else:
-                    print(emojis[self.matriz[l][c]], end='')
-            print()
-
-        time.sleep(0.2)
+                    return (l,c)
 
     def _backtrack(self, linha, coluna):
         #BASE
@@ -77,9 +56,9 @@ class Labirinto:
             return True
         
         #MARCACAO
+        original = self.matriz[linha][coluna]
         self.matriz[linha][coluna] = '.'
         self.caminho.append((linha,coluna))
-        self._exibir(linha, coluna)
     
         #ANDANDO
         
@@ -93,16 +72,17 @@ class Labirinto:
             return True
         
         self.caminho.pop()
-        self._exibir(linha, coluna)
+        
         return False
+        
 
     def _ler_labirinto(self):
         with open(self.nome_arquivo, 'r') as arquivo:
             linhas = arquivo.readlines()
-
+            
         for linha in linhas:
             linha = linha.strip()
-
+            
             if linha == '':
                 continue
             linha_atual = []
@@ -110,21 +90,22 @@ class Labirinto:
                 caractere = caractere.lower()
                 if caractere in ('0', '1', 'm', 'e'):
                     linha_atual.append(caractere)
+                        
                 else:
                     self.erro = True
-
+            
             self.matriz.append(linha_atual)
-
-        num_colunas = len(self.matriz[0]) + 2 if self.matriz else 0
-
-        # add paredes
-        for x in range(len(self.matriz)):
+        
+        num_colunas = len(self.matriz[0])+2 if self.matriz else 0
+        
+        #add paredes
+            
+        for x in range(0,len(self.matriz)):
             self.matriz[x] = ['1'] + self.matriz[x] + ['1']
-
+        
         parede = ['1'] * num_colunas
         self.matriz.insert(0, parede)
-        self.matriz.append(parede[:])
-
+        self.matriz.append(parede)  
 
 lab1 = Labirinto('labirinto.txt')
 lab1.resultado()
